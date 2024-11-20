@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package posty_v1;
+
+import "google/protobuf/timestamp.proto";
+
+import "google/api/annotations.proto";
+
+option go_package = "apartment_service/pkg/grpc/apartment_v1";
+
+message Post {
+  int64 id = 1;
+  string title = 2;
+  int64 image = 3;
+  int64 creator_id = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+service ApartmentService {
+  rpc CreatePost(CreatePostRequest) returns (Post){
+    option (google.api.http) = {
+      post: "/v1/posts"
+      body: "*"
+    };
+  };
+  rpc GetPost(GetPostRequest) returns (Post){
+    option (google.api.http) = {
+      get: "/v1/posts/{id}"
+    };
+  };
+  rpc GetAllPosts(GetAllPostsRequest) returns (GetAllPostsResponse){
+    option (google.api.http) = {
+      get: "/v1/posts"
+    };
+  };
+}
+
+//Requests
+
+message CreatePostRequest {
+  string title = 1;
+  int64 image = 2;
+  int64 creator_id = 3;
+}
+
+message GetPostRequest {
+  int64 id = 1;
+}
+
+message GetAllPostsRequest {
+  int64 cursor = 1;
+  int64 limit = 2;
+}
+
+
+//Responses
+
+message GetAllPostsResponse {
+  repeated Post posts = 1;
+}
