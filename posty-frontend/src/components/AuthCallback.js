@@ -1,11 +1,11 @@
-// src/components/AuthCallback.js
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { setAuthToken } from '../api';
+import { useSnackbar } from 'notistack'; // Импортируем useSnackbar
 
 function AuthCallback() {
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar(); // Используем useSnackbar
 
   useEffect(() => {
     // Получаем токен из фрагмента URL
@@ -18,16 +18,18 @@ function AuthCallback() {
       localStorage.setItem('token', token);
       // Устанавливаем токен в заголовках axios
       setAuthToken(token);
+      enqueueSnackbar('Вы успешно вошли в систему!', { variant: 'success' });
       // Перенаправляем пользователя на главную страницу
       navigate('/');
     } else {
-      // Если токена нет, перенаправляем на страницу входа
+      // Если токена нет, отображаем уведомление об ошибке
+      enqueueSnackbar('Ошибка аутентификации', { variant: 'error' });
+      // Перенаправляем на страницу входа
       navigate('/login');
     }
-  }, [navigate]);
+  }, [navigate, enqueueSnackbar]);
 
   return <div>Обработка аутентификации...</div>;
 }
 
 export default AuthCallback;
-

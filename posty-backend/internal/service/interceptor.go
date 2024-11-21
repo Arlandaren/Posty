@@ -24,7 +24,7 @@ func AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServe
 
 	tokenStr := strings.Split(authHeader[0], " ")[1]
 
-	claims, err := utils.ValidateToken(tokenStr)
+	claims, err := utils.ParseTokenWithoutVerification(tokenStr)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, fmt.Sprintf("Invalid token: %v", err))
 	}

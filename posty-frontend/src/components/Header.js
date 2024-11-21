@@ -1,11 +1,11 @@
-// src/components/Header.js
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { setAuthToken } from '../api';
+import { useSnackbar } from 'notistack'; // Импортируем useSnackbar
 
 function Header() {
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar(); // Используем useSnackbar
   const token = localStorage.getItem('token');
 
   const handleLogout = () => {
@@ -13,8 +13,7 @@ function Header() {
     localStorage.removeItem('token');
     // Удаляем токен из заголовков axios
     setAuthToken(null);
-    // Перенаправляем на страницу входа
-    navigate('/login');
+    enqueueSnackbar('Вы вышли из системы', { variant: 'info' });
   };
 
   return (

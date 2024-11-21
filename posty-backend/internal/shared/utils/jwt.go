@@ -29,3 +29,16 @@ func ValidateToken(tokenString string) (*dto.Claims, error) {
 
 	return claims, nil
 }
+
+func ParseTokenWithoutVerification(tokenStr string) (*dto.Claims, error) {
+	token, _, err := new(jwt.Parser).ParseUnverified(tokenStr, &dto.Claims{})
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := token.Claims.(*dto.Claims); ok {
+		return claims, nil
+	}
+
+	return nil, fmt.Errorf("invalid token claims")
+}
