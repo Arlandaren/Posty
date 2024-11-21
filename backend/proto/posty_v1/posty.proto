@@ -11,7 +11,7 @@ option go_package = "service/pkg/grpc/posty_v1";
 message Post {
   int64 id = 1;
   string title = 2;
-  int64 image = 3;
+  string image = 3;
   int64 creator_id = 4;
   google.protobuf.Timestamp created_at = 5;
 }
@@ -69,7 +69,7 @@ message CommentPostRequest {
 
 message CreatePostRequest {
   string title = 1;
-  int64 image = 2;
+  string image = 2;
 }
 
 message GetPostRequest {
@@ -81,9 +81,7 @@ message GetAllPostsRequest {
   int64 limit = 2;
 }
 
-
 //Responses
-
 message GetAllCommentsResponse {
   repeated Comment comments = 1;
 }

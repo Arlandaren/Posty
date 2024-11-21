@@ -7,7 +7,7 @@ import (
 type Post struct {
 	ID        int64 `gorm:"primaryKey"`
 	Title     string
-	Image     int64
+	Image     string
 	CreatorID int64
 	CreatedAt time.Time
 }

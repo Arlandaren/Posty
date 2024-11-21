@@ -5,23 +5,25 @@ import (
 	"errors"
 	"fmt"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/rs/cors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
+
+	httpHandler "service/internal/transport/http"
+
 	"net/http"
 	"os"
 	"os/signal"
 	"service/internal/repository"
 	"service/internal/service"
 	"service/internal/shared/storage/postgres"
+	transport "service/internal/transport/grpc"
 	pb "service/pkg/grpc/posty_v1"
 	"sync"
 	"syscall"
-	"time"
-
-	transport "service/internal/transport/grpc"
 )
 
 const (
@@ -117,31 +119,37 @@ func startHttpServer(ctx context.Context) error {
 		return fmt.Errorf("failed to register service handler: %w", err)
 	}
 
-	handler := allowCORS(mux)
+	// Создаем HTTP mux для обработки как grpc-gateway запросов, так и кастомных HTTP обработчиков
+	httpMux := http.NewServeMux()
+	httpMux.Handle("/", mux)
+	httpMux.HandleFunc("/v1/images", httpHandler.UploadImageHandler)
+	httpMux.HandleFunc("/v1/images/", httpHandler.GetImageHandler) // для получения изображений
 
-	srv := &http.Server{
+	fmt.Println("http обработчики")
+
+	// Оборачиваем с помощью CORS, если требуется
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3001"}, // ваш фронтенд адрес
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+	})
+	handler := c.Handler(httpMux)
+
+	server := &http.Server{
 		Addr:    httpAddress,
 		Handler: handler,
 	}
 
 	go func() {
-		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Printf("HTTP server exited with error: %v", err)
+		log.Printf("HTTP server listening at %v\n", httpAddress)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Failed to serve HTTP server: %v", err)
 		}
 	}()
-
-	log.Printf("HTTP server listening at %v\n", httpAddress)
 
 	<-ctx.Done()
 
 	log.Println("Shutting down HTTP server...")
-
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	if err := srv.Shutdown(shutdownCtx); err != nil {
-		return fmt.Errorf("HTTP server Shutdown failed: %w", err)
-	}
-
-	return nil
+	return server.Shutdown(context.Background())
 }

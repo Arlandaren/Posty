@@ -15,7 +15,7 @@ services:
       - "5433:5432"
 
   server:
-    build: ..
+    build: .
     environment:
       - PG_STRING=${PG_STRING}
       - jwt_key=${jwt_key}

@@ -2,16 +2,10 @@ package transport
 
 import (
 	"context"
-	"fmt"
-	"io"
-	"os"
-	"path"
-	"service/internal/service"
-	"service/pkg/grpc/posty_v1"
-	"time"
-
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"service/internal/service"
+	"service/pkg/grpc/posty_v1"
 )
 
 type Server struct {
@@ -107,54 +101,4 @@ func (s *Server) GetAllComments(ctx context.Context, req *posty_v1.GetAllComment
 	return &posty_v1.GetAllCommentsResponse{
 		Comments: comments,
 	}, nil
-}
-
-func (s *Server) UploadImage(stream posty_v1.PostyService_UploadImageServer) error {
-	imageID := time.Now().UnixNano()
-	filename := fmt.Sprintf("%d_image", imageID)
-	filepath := path.Join("uploads", filename)
-
-	file, err := os.Create(filepath)
-	if err != nil {
-		return status.Errorf(codes.Internal, "Failed to create file: %v", err)
-	}
-	defer file.Close()
-
-	for {
-		req, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return status.Errorf(codes.Unknown, "Failed to receive chunk: %v", err)
-		}
-
-		_, err = file.Write(req.ChunkData)
-		if err != nil {
-			return status.Errorf(codes.Internal, "Failed to write to file: %v", err)
-		}
-	}
-
-	res := &posty_v1.UploadImageResponse{
-		ImageId: imageID,
-	}
-	return stream.SendAndClose(res)
-}
-
-func (s *Server) GetImage(ctx context.Context, req *posty_v1.GetImageRequest) (*posty_v1.GetImageResponse, error) {
-	filename := fmt.Sprintf("%d_image", req.ImageId)
-	filepath := path.Join("uploads", filename)
-
-	data, err := os.ReadFile(filepath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, status.Errorf(codes.NotFound, "Image not found")
-		}
-		return nil, status.Errorf(codes.Internal, "Failed to read image: %v", err)
-	}
-
-	res := &posty_v1.GetImageResponse{
-		Data: data,
-	}
-	return res, nil
 }
