@@ -2,19 +2,16 @@
 
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8086/v1';
+const API_BASE_URL = 'http://localhost:8086/v1'; // Адрес API вашего бэкенда Posty
 
 const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-const AUTH_API_URL = 'http://localhost:8080/v1/auth';
-
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJyb2xlIjoidXNlciIsImV4cCI6MTczMjIxNzQ0NiwiaWF0IjoxNzMyMTMxMDQ2LCJpc3MiOiJhdXRoX3NlcnZpY2UifQ.Ib0GibbYGTQyPAsLJHBYErseUf9KmVpT3kfDQCapjLs'; // Замените на ваш токен
-
 // Добавляем интерцептор запросов
 api.interceptors.request.use(
   (config) => {
+    const token = localStorage.getItem('token'); // Получаем токен из localStorage
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
       console.log('Заголовок Authorization добавлен в запрос:', config.headers['Authorization']);
@@ -24,21 +21,15 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-export const setAuthToken = () => {
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJyb2xlIjoidXNlciIsImV4cCI6MTczMjIxNzQ0NiwiaWF0IjoxNzMyMTMxMDQ2LCJpc3MiOiJhdXRoX3NlcnZpY2UifQ.Ib0GibbYGTQyPAsLJHBYErseUf9KmVpT3kfDQCapjLs'; // Замените на ваш токен
-  api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  console.log('Токен установлен:', api.defaults.headers.common['Authorization']);
+// Функция для установки токена при входе или регистрации
+export const setAuthToken = (token) => {
+  if (token) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete api.defaults.headers.common['Authorization'];
+  }
 };
 
-// Регистрация пользователя
-export const registerUser = (name, password) => {
-  return axios.post(`${AUTH_API_URL}/register`, { name, password });
-};
-
-// Вход пользователя
-export const loginUser = (name, password) => {
-  return axios.post(`${AUTH_API_URL}/login`, { name, password });
-};
 
 // Функции API
 
@@ -56,7 +47,7 @@ export const getPostById = (id) => {
 
 // Создать новый пост
 export const createPost = (title, image) => {
-  return api.post('/posts', { title, image});
+  return api.post('/posts', { title, image });
 };
 
 // Получить список комментариев к посту
@@ -81,7 +72,6 @@ export const uploadImage = (file) => {
     },
   });
 };
-
 
 // Получить URL изображения
 export const getImageUrl = (image) => {

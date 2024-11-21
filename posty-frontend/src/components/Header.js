@@ -9,54 +9,40 @@ function Header() {
   const token = localStorage.getItem('token');
 
   const handleLogout = () => {
+    // Удаляем токен из localStorage
     localStorage.removeItem('token');
+    // Удаляем токен из заголовков axios
     setAuthToken(null);
+    // Перенаправляем на страницу входа
     navigate('/login');
   };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-      <div className="container">
-        <Link className="navbar-brand" to="/">
-          PostyApp
+      {/*Остальной код навигации*/}
+      <div className="navbar-nav ms-auto">
+        <Link className="nav-link" to="/">
+          Главная
         </Link>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Переключить навигацию"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <div className="navbar-nav ms-auto">
-            <Link className="nav-link" to="/">
-              Главная
+        {token ? (
+          <>
+            <Link className="nav-link" to="/create">
+              Создать пост
             </Link>
-            {token ? (
-              <>
-                <Link className="nav-link" to="/create">
-                  Создать пост
-                </Link>
-                <button className="nav-link btn btn-link" onClick={handleLogout}>
-                  Выйти
-                </button>
-              </>
-            ) : (
-              <>
-                <Link className="nav-link" to="/login">
-                  Вход
-                </Link>
-                <Link className="nav-link" to="/register">
-                  Регистрация
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
+            <button className="nav-link btn btn-link" onClick={handleLogout}>
+              Выйти
+            </button>
+          </>
+        ) : (
+          <>
+            <Link className="nav-link" to="/login">
+              Вход
+            </Link>
+            <Link className="nav-link" to="/register">
+              Регистрация
+            </Link>
+          </>
+        )}
       </div>
     </nav>
   );

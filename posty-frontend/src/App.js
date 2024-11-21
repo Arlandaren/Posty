@@ -1,21 +1,17 @@
 // src/App.js
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { setAuthToken } from './api';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import PostList from './components/PostList';
 import PostDetail from './components/PostDetail';
 import CreatePost from './components/CreatePost';
-import Login from './components/Login';
-import Register from './components/Register';
+import LoginRedirect from './components/LoginRedirect';
+import RegisterRedirect from './components/RegisterRedirect';
+import AuthCallback from './components/AuthCallback';
 
 function App() {
-  useEffect(() => {
-    setAuthToken();
-  }, []);
-
   return (
     <Router>
       <Header />
@@ -24,8 +20,9 @@ function App() {
           <Route path="/" element={<PostList />} />
           <Route path="/posts/:id" element={<PostDetail />} />
           <Route path="/create" element={<CreatePost />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<LoginRedirect />} />
+          <Route path="/register" element={<RegisterRedirect />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route
             path="*"
             element={
@@ -42,3 +39,4 @@ function App() {
 }
 
 export default App;
+

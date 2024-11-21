@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/rs/cors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
@@ -128,12 +127,8 @@ func startHttpServer(ctx context.Context) error {
 	fmt.Println("http обработчики")
 
 	// Оборачиваем с помощью CORS, если требуется
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3001"}, // ваш фронтенд адрес
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Content-Type", "Authorization"},
-		AllowCredentials: true,
-	})
+	c := allowCORS()
+
 	handler := c.Handler(httpMux)
 
 	server := &http.Server{
