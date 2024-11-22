@@ -4,3 +4,4 @@ posty-backend/external/
 **/external/
 .idea
 /.idea
+/**/.idea/
