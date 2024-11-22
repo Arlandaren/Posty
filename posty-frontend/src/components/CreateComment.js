@@ -1,20 +1,30 @@
-// src/components/CreateComment.js
-
 import React, { useState } from 'react';
 import { createComment } from '../api';
+import { useSnackbar } from 'notistack'; // Импортируем useSnackbar
 
 function CreateComment({ postId }) {
   const [comment, setComment] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { enqueueSnackbar } = useSnackbar(); // Используем useSnackbar
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
     createComment(postId, comment)
       .then(() => {
         setComment('');
-        window.location.reload(); // Обновляем страницу после добавления комментария
+        enqueueSnackbar('Комментарий добавлен!', { variant: 'success' });
+        // Обновляем комментарии без перезагрузки страницы
+        if (typeof window !== 'undefined') {
+          window.location.reload();
+        }
       })
       .catch((error) => {
         console.error('Ошибка при добавлении комментария:', error);
+        enqueueSnackbar('Ошибка при добавлении комментария', { variant: 'error' });
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -28,11 +38,21 @@ function CreateComment({ postId }) {
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           required
+          disabled={loading}
         ></textarea>
       </div>
-      <button type="submit" className="btn btn-primary">
-        <i className="fas fa-paper-plane me-2"></i>
-        Отправить
+      <button type="submit" className="btn btn-primary" disabled={loading}>
+        {loading ? (
+          <>
+            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Отправка...
+          </>
+        ) : (
+          <>
+            <i className="fas fa-paper-plane me-2"></i>
+            Отправить
+          </>
+        )}
       </button>
     </form>
   );
