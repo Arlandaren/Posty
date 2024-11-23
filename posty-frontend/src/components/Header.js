@@ -1,47 +1,60 @@
+// src/components/Header.js
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { setAuthToken } from '../api';
-import { useSnackbar } from 'notistack'; // Импортируем useSnackbar
 
 function Header() {
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar(); // Используем useSnackbar
   const token = localStorage.getItem('token');
 
   const handleLogout = () => {
-    // Удаляем токен из localStorage
     localStorage.removeItem('token');
-    // Удаляем токен из заголовков axios
-    setAuthToken(null);
-    enqueueSnackbar('Вы вышли из системы', { variant: 'info' });
+    window.location.reload();
   };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-      {/*Остальной код навигации*/}
-      <div className="navbar-nav ms-auto">
-        <Link className="nav-link" to="/">
-          Главная
+      <div className="container">
+        <Link className="navbar-brand" to="/">
+          PostyApp
         </Link>
-        {token ? (
-          <>
-            <Link className="nav-link" to="/create">
-              Создать пост
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Переключить навигацию"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <div className="navbar-nav ms-auto">
+            <Link className="nav-link" to="/">
+              Главная
             </Link>
-            <button className="nav-link btn btn-link" onClick={handleLogout}>
-              Выйти
-            </button>
-          </>
-        ) : (
-          <>
-            <Link className="nav-link" to="/login">
-              Вход
-            </Link>
-            <Link className="nav-link" to="/register">
-              Регистрация
-            </Link>
-          </>
-        )}
+            {token ? (
+              <>
+                <Link className="nav-link" to="/create">
+                  Создать пост
+                </Link>
+                <button className="nav-link btn btn-link" onClick={handleLogout}>
+                  Выйти
+                </button>
+              </>
+            ) : (
+              <>
+                <Link className="nav-link" to="/login">
+                  Вход
+                </Link>
+                <Link className="nav-link" to="/register">
+                  Регистрация
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </nav>
   );

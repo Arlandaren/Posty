@@ -14,29 +14,30 @@ import AuthCallback from './components/AuthCallback';
 function App() {
   return (
     <Router>
-      <Header />
-      <div className="flex-grow-1">
-        <Routes>
-          <Route path="/" element={<PostList />} />
-          <Route path="/posts/:id" element={<PostDetail />} />
-          <Route path="/create" element={<CreatePost />} />
-          <Route path="/login" element={<LoginRedirect />} />
-          <Route path="/register" element={<RegisterRedirect />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route
-            path="*"
-            element={
-              <div className="container mt-4">
-                <h1>Страница не найдена</h1>
-              </div>
-            }
-          />
-        </Routes>
+      <div className="d-flex flex-column min-vh-100">
+        <Header />
+        <div className="flex-grow-1">
+          <Routes>
+            <Route path="/" element={<PostList />} />
+            <Route path="/posts/:id" element={<PostDetail />} />
+            <Route path="/create" element={<CreatePost />} />
+            <Route path="/login" element={<LoginRedirect />} />
+            <Route path="/register" element={<RegisterRedirect />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route
+              path="*"
+              element={
+                <div className="container mt-4">
+                  <h1>Страница не найдена</h1>
+                </div>
+              }
+            />
+          </Routes>
+        </div>
+        <Footer />
       </div>
-      <Footer />
     </Router>
   );
 }
 
 export default App;
-

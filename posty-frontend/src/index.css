@@ -1,14 +1,16 @@
-/*src/index.css*/
+/* index.css */
 
+html,
 body {
-  background-color: #f8f9fa;
+  height: 100%;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: #343a40;
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.flex-grow-1 {
+  flex: 1;
 }
