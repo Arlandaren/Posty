@@ -8,7 +8,7 @@ Posty - это веб-приложение для создания и управ
 
    ```bash
    git clone <repository-url>
-   cd posty
+   cd vtb-api-hackathon-client
    ```
 
 2. Установите зависимости для сервера и фронтенда.
@@ -20,19 +20,17 @@ Posty - это веб-приложение для создания и управ
 1. Перейдите в директорию сервера:
 
    ```bash
-   cd server
+   cd posty_backend
    ```
 
-2. Установите зависимости:
+2. Установите окружение:
 
-   ```bash
-   go mod tidy
-   ```
+  в .env файле
 
 3. Запустите сервер:
 
    ```bash
-   go run main.go
+   docker compose up -d
    ```
 
 Сервер будет запущен на `http://localhost:8086`.
